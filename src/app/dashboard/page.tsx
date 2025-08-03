@@ -11,9 +11,31 @@ import {
   Activity,
   Plus
 } from "lucide-react";
-import Link from "next/link";
+import { getCurrentBusiness } from "@/lib/auth";
+import { formatCurrency } from "@/lib/utils";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const business = await getCurrentBusiness();
+  
+  if (!business) {
+    return null;
+  }
+
+  // Calculate stats from real data
+  const totalRevenue = business.payments
+    .filter((p: any) => p.status === 'COMPLETED')
+    .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+  const totalTransactions = business.payments.length;
+  const successfulPayments = business.payments.filter((p: any) => p.status === 'COMPLETED').length;
+  const successRate = totalTransactions > 0 ? (successfulPayments / totalTransactions) * 100 : 0;
+  
+  const activeCustomers = business.customers.filter((c: any) => c.status === 'ACTIVE').length;
+  const totalCustomers = business.customers.length;
+
+  // Get recent transactions
+  const recentTransactions = business.payments.slice(0, 4);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
@@ -30,7 +52,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">₹125,000</div>
+            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground flex items-center">
               <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
               +12% from last month
@@ -44,7 +66,7 @@ export default function DashboardPage() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">1,234</div>
+            <div className="text-xl sm:text-2xl font-bold">{totalTransactions}</div>
             <p className="text-xs text-muted-foreground flex items-center">
               <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
               +8% from last month
@@ -58,7 +80,7 @@ export default function DashboardPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">98.5%</div>
+            <div className="text-xl sm:text-2xl font-bold">{successRate.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground flex items-center">
               <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
               +2.1% from last month
@@ -72,7 +94,7 @@ export default function DashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">456</div>
+            <div className="text-xl sm:text-2xl font-bold">{activeCustomers}</div>
             <p className="text-xs text-muted-foreground flex items-center">
               <ArrowDownRight className="h-3 w-3 text-red-600 mr-1" />
               -3% from last month
@@ -97,64 +119,41 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3 sm:space-y-4">
-                {[
-                  {
-                    id: "txn_001",
-                    amount: "₹2,500",
-                    status: "completed",
-                    customer: "Ahmed Khan",
-                    date: "2 minutes ago",
-                    provider: "PayFast"
-                  },
-                  {
-                    id: "txn_002", 
-                    amount: "₹1,800",
-                    status: "pending",
-                    customer: "Fatima Ali",
-                    date: "15 minutes ago",
-                    provider: "Easypaisa"
-                  },
-                  {
-                    id: "txn_003",
-                    amount: "₹3,200",
-                    status: "completed", 
-                    customer: "Usman Ahmed",
-                    date: "1 hour ago",
-                    provider: "Safepay"
-                  },
-                  {
-                    id: "txn_004",
-                    amount: "₹950",
-                    status: "failed",
-                    customer: "Ayesha Khan",
-                    date: "2 hours ago",
-                    provider: "JazzCash"
-                  }
-                ].map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.map((transaction: any) => (
+                    <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3 min-w-0 flex-1">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm truncate">
+                            {transaction.customerName || transaction.customerEmail || 'Unknown Customer'}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">{transaction.provider}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-sm truncate">{transaction.customer}</p>
-                        <p className="text-xs text-gray-500 truncate">{transaction.provider}</p>
+                      <div className="text-right flex-shrink-0 ml-2">
+                        <p className="font-medium text-sm">{formatCurrency(transaction.amount)}</p>
+                        <Badge 
+                          variant={
+                            transaction.status === "COMPLETED" ? "default" :
+                            transaction.status === "PENDING" ? "secondary" : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {transaction.status.toLowerCase()}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-2">
-                      <p className="font-medium text-sm">{transaction.amount}</p>
-                      <Badge 
-                        variant={
-                          transaction.status === "completed" ? "default" :
-                          transaction.status === "pending" ? "secondary" : "destructive"
-                        }
-                        className="text-xs"
-                      >
-                        {transaction.status}
-                      </Badge>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p>No transactions yet</p>
+                    <p className="text-sm">Your payment activity will appear here</p>
                   </div>
-                ))}
+                )}
               </div>
               <div className="mt-4">
                 <Button variant="outline" className="w-full">
@@ -166,10 +165,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-6">
+        <div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+              <CardTitle>Quick Actions</CardTitle>
               <CardDescription>
                 Common tasks and shortcuts
               </CardDescription>
@@ -199,9 +198,9 @@ export default function DashboardPage() {
           </Card>
 
           {/* API Status */}
-          <Card>
+          <Card className="mt-6">
             <CardHeader>
-              <CardTitle className="text-lg">API Status</CardTitle>
+              <CardTitle>API Status</CardTitle>
               <CardDescription>
                 Payment provider connections
               </CardDescription>

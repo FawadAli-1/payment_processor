@@ -6,10 +6,144 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  clerkId      String   @unique
+  email        String
+  firstName    String?
+  lastName     String?
+  businesses   Business[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Business {
+  id           String     @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  address      String?
+  website      String?
+  logo         String?
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  apiKey       String     @unique
+  webhooks     Webhook[]
+  payments     Payment[]
+  paymentLinks PaymentLink[]
+  customers    Customer[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  amount        Int
+  currency      String   @default("PKR")
+  status        PaymentStatus
+  provider      PaymentProvider
+  providerRef   String?
+  description   String?
+  customerEmail String?
+  customerName  String?
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId    String
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  customerId    String?
+  paymentLink   PaymentLink? @relation(fields: [paymentLinkId], references: [id])
+  paymentLinkId String?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PaymentLink {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  amount      Int
+  currency    String   @default("PKR")
+  status      PaymentLinkStatus @default(ACTIVE)
+  clicks      Int      @default(0)
+  payments    Payment[]
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId  String
+  expiresAt   DateTime?
+  url         String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  address      String?
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId   String
+  payments     Payment[]
+  totalSpent   Int      @default(0)
+  totalOrders  Int      @default(0)
+  lastOrderAt  DateTime?
+  status       CustomerStatus @default(ACTIVE)
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([email, businessId])
+}
+
+model Webhook {
+  id           String   @id @default(cuid())
+  url          String
+  event        String
+  secret       String?
+  status       WebhookStatus @default(ACTIVE)
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentProvider {
+  PAYFAST
+  SAFEPAY
+  EASYPAISA
+  JAZZCASH
+}
+
+enum PaymentLinkStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  DRAFT
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  FAILED
 }
