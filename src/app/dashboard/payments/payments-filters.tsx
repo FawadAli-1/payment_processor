@@ -92,7 +92,7 @@ export function PaymentsFilters() {
       {/* Date Range Picker */}
       <div 
         id="dateRangePicker" 
-        className="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg"
       >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
