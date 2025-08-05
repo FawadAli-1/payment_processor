@@ -1,76 +1,76 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { 
-  CreditCard, 
-  Search,
-  Filter,
-  Download,
-  Eye,
-  MoreHorizontal,
-  Calendar,
   DollarSign
 } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { calculatePaymentStats, formatPaymentAmount } from "@/lib/payments";
+import { PaymentsActions } from "./payments-actions";
+import { PaymentsFilters } from "./payments-filters";
+import { PaymentsTable } from "./payments-table";
 
-export default function PaymentsPage() {
-  const payments = [
-    {
-      id: "pay_001",
-      amount: "₹2,500",
-      status: "completed",
-      customer: "Ahmed Khan",
-      email: "ahmed@example.com",
-      date: "2024-01-15",
-      time: "14:30",
-      provider: "PayFast",
-      description: "Premium subscription"
-    },
-    {
-      id: "pay_002",
-      amount: "₹1,800",
-      status: "pending",
-      customer: "Fatima Ali",
-      email: "fatima@example.com",
-      date: "2024-01-15",
-      time: "13:45",
-      provider: "Easypaisa",
-      description: "Course payment"
-    },
-    {
-      id: "pay_003",
-      amount: "₹3,200",
-      status: "completed",
-      customer: "Usman Ahmed",
-      email: "usman@example.com",
-      date: "2024-01-15",
-      time: "12:20",
-      provider: "Safepay",
-      description: "Product purchase"
-    },
-    {
-      id: "pay_004",
-      amount: "₹950",
-      status: "failed",
-      customer: "Ayesha Khan",
-      email: "ayesha@example.com",
-      date: "2024-01-15",
-      time: "11:15",
-      provider: "JazzCash",
-      description: "Service fee"
-    },
-    {
-      id: "pay_005",
-      amount: "₹4,500",
-      status: "completed",
-      customer: "Muhammad Hassan",
-      email: "hassan@example.com",
-      date: "2024-01-14",
-      time: "16:45",
-      provider: "PayFast",
-      description: "Consultation fee"
+export default async function PaymentsPage() {
+  const { userId } = await auth();
+  
+  if (!userId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h1>
+          <p className="text-gray-600 mb-4">Please sign in to access your payments.</p>
+          <a 
+            href="/sign-in" 
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Sign In
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Get user and business data
+  const user = await db.user.findUnique({
+    where: { clerkId: userId },
+  });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h1>
+          <p className="text-gray-600 mb-4">Your user account could not be found.</p>
+          <a 
+            href="/sign-in" 
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Sign In Again
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const business = await db.business.findFirst({
+    where: { userId: user.id },
+    include: {
+      payments: {
+        orderBy: { createdAt: 'desc' },
+        include: {
+          customer: true
+        }
+      }
     }
-  ];
+  });
+
+  if (!business) {
+    redirect("/dashboard/setup");
+  }
+
+  // Calculate dynamic stats using utility function
+  const stats = calculatePaymentStats(business.payments);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -82,14 +82,7 @@ export default function PaymentsPage() {
             <p className="text-sm sm:text-base text-gray-600 mt-1">Manage and track all your payment transactions</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <Button>
-              <CreditCard className="mr-2 h-4 w-4" />
-              New Payment
-            </Button>
+              <PaymentsActions />
           </div>
         </div>
       </div>
@@ -97,27 +90,7 @@ export default function PaymentsPage() {
       {/* Filters */}
       <Card className="mb-6">
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search payments..."
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline">
-                <Filter className="mr-2 h-4 w-4" />
-                Filter
-              </Button>
-              <Button variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Date Range
-              </Button>
-            </div>
-          </div>
+          <PaymentsFilters />
         </CardContent>
       </Card>
 
@@ -128,7 +101,7 @@ export default function PaymentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-xl font-bold">₹12,950</p>
+                <p className="text-xl font-bold">{formatPaymentAmount(stats.totalRevenue)}</p>
               </div>
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
@@ -139,9 +112,9 @@ export default function PaymentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Successful</p>
-                <p className="text-xl font-bold">4</p>
+                <p className="text-xl font-bold">{stats.successfulPayments}</p>
               </div>
-              <Badge variant="default" className="h-8 px-3">98%</Badge>
+              <Badge variant="default" className="h-8 px-3">{stats.successRate.toFixed(1)}%</Badge>
             </div>
           </CardContent>
         </Card>
@@ -150,9 +123,9 @@ export default function PaymentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pending</p>
-                <p className="text-xl font-bold">1</p>
+                <p className="text-xl font-bold">{stats.pendingPayments}</p>
               </div>
-              <Badge variant="secondary" className="h-8 px-3">20%</Badge>
+              <Badge variant="secondary" className="h-8 px-3">{stats.pendingRate.toFixed(1)}%</Badge>
             </div>
           </CardContent>
         </Card>
@@ -161,91 +134,16 @@ export default function PaymentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Failed</p>
-                <p className="text-xl font-bold">1</p>
+                <p className="text-xl font-bold">{stats.failedPayments}</p>
               </div>
-              <Badge variant="destructive" className="h-8 px-3">2%</Badge>
+              <Badge variant="destructive" className="h-8 px-3">{stats.failureRate.toFixed(1)}%</Badge>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Payments Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Payments</CardTitle>
-          <CardDescription>
-            All payment transactions from your business
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Payment</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Customer</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Amount</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Status</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Provider</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Date</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payments.map((payment) => (
-                  <tr key={payment.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">
-                      <div>
-                        <p className="font-medium text-sm">{payment.id}</p>
-                        <p className="text-xs text-gray-500">{payment.description}</p>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div>
-                        <p className="font-medium text-sm">{payment.customer}</p>
-                        <p className="text-xs text-gray-500">{payment.email}</p>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <p className="font-medium text-sm">{payment.amount}</p>
-                    </td>
-                    <td className="p-3">
-                      <Badge 
-                        variant={
-                          payment.status === "completed" ? "default" :
-                          payment.status === "pending" ? "secondary" : "destructive"
-                        }
-                        className="text-xs"
-                      >
-                        {payment.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3">
-                      <p className="text-sm">{payment.provider}</p>
-                    </td>
-                    <td className="p-3">
-                      <div>
-                        <p className="text-sm">{payment.date}</p>
-                        <p className="text-xs text-gray-500">{payment.time}</p>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      <PaymentsTable payments={business.payments} />
     </div>
   );
 } 
