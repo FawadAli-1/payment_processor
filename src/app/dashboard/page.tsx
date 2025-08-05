@@ -11,14 +11,69 @@ import {
   Activity,
   Plus
 } from "lucide-react";
-import { getCurrentBusiness } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 
 export default async function DashboardPage() {
-  const business = await getCurrentBusiness();
+  const { userId } = await auth();
   
+  if (!userId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h1>
+          <p className="text-gray-600 mb-4">Please sign in to access your dashboard.</p>
+          <a 
+            href="/sign-in" 
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Sign In
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Get user and business data
+  const user = await db.user.findUnique({
+    where: { clerkId: userId },
+  });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h1>
+          <p className="text-gray-600 mb-4">Your user account could not be found.</p>
+          <a 
+            href="/sign-in" 
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Sign In Again
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const business = await db.business.findFirst({
+    where: { userId: user.id },
+    include: {
+      payments: {
+        orderBy: { createdAt: 'desc' },
+        take: 10
+      },
+      customers: {
+        orderBy: { createdAt: 'desc' },
+        take: 10
+      }
+    }
+  });
+
   if (!business) {
-    return null;
+    redirect("/dashboard/setup");
   }
 
   // Calculate stats from real data

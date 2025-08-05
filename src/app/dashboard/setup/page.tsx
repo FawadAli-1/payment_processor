@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Building, Save } from "lucide-react";
 export default function SetupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,9 +21,33 @@ export default function SetupPage() {
     website: "",
   });
 
+  // Check if user already has a business
+  useEffect(() => {
+    const checkBusiness = async () => {
+      try {
+        const response = await fetch("/api/business/check");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.hasBusiness) {
+            // User already has a business, redirect to dashboard
+            router.push("/dashboard");
+            return;
+          }
+        }
+      } catch (error) {
+        // Silently handle error, user can still proceed with setup
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkBusiness();
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       const response = await fetch("/api/business/setup", {
@@ -33,12 +59,16 @@ export default function SetupPage() {
       });
 
       if (response.ok) {
-        router.push("/dashboard");
+        // Add a small delay to ensure database is updated
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Force a complete page reload to ensure fresh server-side rendering
+        window.location.href = "/dashboard";
       } else {
-        throw new Error("Failed to create business");
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to create business");
       }
     } catch (error) {
-      console.error("Error creating business:", error);
+      setError("Failed to create business. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +80,29 @@ export default function SetupPage() {
       [e.target.name]: e.target.value,
     });
   };
+
+  // Show loading while checking business status
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="flex justify-center">
+              <div className="h-12 w-12 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                <Building className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+              Loading...
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Checking your business status
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -76,6 +129,11 @@ export default function SetupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="name">Business Name *</Label>

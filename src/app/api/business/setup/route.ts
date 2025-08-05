@@ -34,6 +34,14 @@ export async function POST(request: NextRequest) {
           email: email,
         },
       });
+    } else {
+      // Update user email if it's different
+      if (user.email !== email) {
+        user = await db.user.update({
+          where: { id: user.id },
+          data: { email },
+        });
+      }
     }
 
     // Check if business already exists
@@ -66,14 +74,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      business,
+      business: {
+        id: business.id,
+        name: business.name,
+        email: business.email,
+        apiKey: business.apiKey,
+      },
       message: "Business created successfully" 
     });
 
   } catch (error) {
-    console.error("Error creating business:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to create business. Please try again." },
       { status: 500 }
     );
   }

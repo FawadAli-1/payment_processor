@@ -49,21 +49,48 @@ export async function getCurrentBusiness() {
 }
 
 export async function requireAuth() {
-  const user = await getCurrentUser();
+  const { userId } = await auth();
   
-  if (!user) {
+  if (!userId) {
     redirect("/sign-in");
+  }
+
+  // Check if user exists in database, if not create them
+  let user = await db.user.findUnique({
+    where: { clerkId: userId },
+  });
+
+  if (!user) {
+    // Create user record for new users
+    user = await db.user.create({
+      data: {
+        clerkId: userId,
+        email: "user@example.com", // This will be updated during business setup
+      },
+    });
   }
 
   return user;
 }
 
-export async function requireBusiness() {
-  const business = await getCurrentBusiness();
-  
-  if (!business) {
-    redirect("/dashboard/setup");
-  }
+export async function getBusinessForUser(userId: string) {
+  const business = await db.business.findFirst({
+    where: { userId },
+    include: {
+      payments: {
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+      paymentLinks: {
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+      customers: {
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+    },
+  });
 
   return business;
 } 
