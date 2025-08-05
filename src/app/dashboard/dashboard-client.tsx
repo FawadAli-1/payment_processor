@@ -1,5 +1,21 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { 
   CreditCard, 
   TrendingUp, 
@@ -7,100 +23,73 @@ import {
   DollarSign,
   ArrowUpRight,
   ArrowDownRight,
-  Activity
+  Activity,
+  Plus,
+  Link,
+  ExternalLink
 } from "lucide-react";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { formatCurrency, calculateStats } from "@/lib/utils";
-import { DashboardActions } from "./dashboard-actions";
-import { TransactionsButton } from "./transactions-button";
+import { formatCurrency } from "@/lib/utils";
 
-export default async function DashboardPage() {
-  const { userId } = await auth();
-  
-  if (!userId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h1>
-          <p className="text-gray-600 mb-4">Please sign in to access your dashboard.</p>
-          <a 
-            href="/sign-in" 
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Sign In
-          </a>
-        </div>
-      </div>
-    );
-  }
+interface DashboardClientProps {
+  stats: any;
+  recentTransactions: any[];
+  providers: any[];
+}
 
-  // Get user and business data
-  const user = await db.user.findUnique({
-    where: { clerkId: userId },
+export function DashboardClient({ stats, recentTransactions, providers }: DashboardClientProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentLinkData, setPaymentLinkData] = useState({
+    title: "",
+    description: "",
+    amount: "",
+    currency: "PKR"
   });
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h1>
-          <p className="text-gray-600 mb-4">Your user account could not be found.</p>
-          <a 
-            href="/sign-in" 
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Sign In Again
-          </a>
-        </div>
-      </div>
-    );
-  }
+  const handleCreatePaymentLink = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/payment-links/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentLinkData),
+      });
 
-  const business = await db.business.findFirst({
-    where: { userId: user.id },
-    include: {
-      payments: {
-        orderBy: { createdAt: 'desc' },
-        take: 10
-      },
-      customers: {
-        orderBy: { createdAt: 'desc' },
-        take: 10
+      if (response.ok) {
+        const result = await response.json();
+        // Reset form
+        setPaymentLinkData({
+          title: "",
+          description: "",
+          amount: "",
+          currency: "PKR"
+        });
+        // Redirect to links page or show success message
+        router.push("/dashboard/links");
+      } else {
+        const error = await response.json();
+        alert(error.error || "Failed to create payment link");
       }
+    } catch (error) {
+      alert("Failed to create payment link");
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
 
-  if (!business) {
-    redirect("/dashboard/setup");
-  }
+  const getChangeIcon = (change: number) => {
+    if (change > 0) return <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />;
+    if (change < 0) return <ArrowDownRight className="h-3 w-3 text-red-600 mr-1" />;
+    return null;
+  };
 
-  // Calculate dynamic stats
-  const stats = calculateStats(business.payments, business.customers);
-
-  // Get recent transactions
-  const recentTransactions = business.payments.slice(0, 4);
-
-  // Fetch provider status dynamically
-  let providers = [
-    { name: "PayFast", status: "online" },
-    { name: "Safepay", status: "online" },
-    { name: "Easypaisa", status: "online" },
-    { name: "JazzCash", status: "offline" }
-  ];
-
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/providers/status`, {
-      cache: 'no-store'
-    });
-    if (response.ok) {
-      const data = await response.json();
-      providers = data.providers;
-    }
-  } catch (error) {
-    // Fallback to default status if API fails
-  }
+  const getChangeText = (change: number) => {
+    if (change > 0) return `+${change.toFixed(1)}% from last month`;
+    if (change < 0) return `${change.toFixed(1)}% from last month`;
+    return "No change from last month";
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -120,14 +109,8 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">{formatCurrency(stats.revenue.current)}</div>
             <p className="text-xs text-muted-foreground flex items-center">
-              {stats.revenue.change > 0 ? (
-                <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
-              ) : stats.revenue.change < 0 ? (
-                <ArrowDownRight className="h-3 w-3 text-red-600 mr-1" />
-              ) : null}
-              {stats.revenue.change > 0 ? `+${stats.revenue.change.toFixed(1)}%` : 
-               stats.revenue.change < 0 ? `${stats.revenue.change.toFixed(1)}%` : 
-               'No change'} from last month
+              {getChangeIcon(stats.revenue.change)}
+              {getChangeText(stats.revenue.change)}
             </p>
           </CardContent>
         </Card>
@@ -140,14 +123,8 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">{stats.transactions.current}</div>
             <p className="text-xs text-muted-foreground flex items-center">
-              {stats.transactions.change > 0 ? (
-                <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
-              ) : stats.transactions.change < 0 ? (
-                <ArrowDownRight className="h-3 w-3 text-red-600 mr-1" />
-              ) : null}
-              {stats.transactions.change > 0 ? `+${stats.transactions.change.toFixed(1)}%` : 
-               stats.transactions.change < 0 ? `${stats.transactions.change.toFixed(1)}%` : 
-               'No change'} from last month
+              {getChangeIcon(stats.transactions.change)}
+              {getChangeText(stats.transactions.change)}
             </p>
           </CardContent>
         </Card>
@@ -160,14 +137,8 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">{stats.successRate.current.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground flex items-center">
-              {stats.successRate.change > 0 ? (
-                <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
-              ) : stats.successRate.change < 0 ? (
-                <ArrowDownRight className="h-3 w-3 text-red-600 mr-1" />
-              ) : null}
-              {stats.successRate.change > 0 ? `+${stats.successRate.change.toFixed(1)}%` : 
-               stats.successRate.change < 0 ? `${stats.successRate.change.toFixed(1)}%` : 
-               'No change'} from last month
+              {getChangeIcon(stats.successRate.change)}
+              {getChangeText(stats.successRate.change)}
             </p>
           </CardContent>
         </Card>
@@ -180,14 +151,8 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">{stats.customers.current}</div>
             <p className="text-xs text-muted-foreground flex items-center">
-              {stats.customers.change > 0 ? (
-                <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
-              ) : stats.customers.change < 0 ? (
-                <ArrowDownRight className="h-3 w-3 text-red-600 mr-1" />
-              ) : null}
-              {stats.customers.change > 0 ? `+${stats.customers.change.toFixed(1)}%` : 
-               stats.customers.change < 0 ? `${stats.customers.change.toFixed(1)}%` : 
-               'No change'} from last month
+              {getChangeIcon(stats.customers.change)}
+              {getChangeText(stats.customers.change)}
             </p>
           </CardContent>
         </Card>
@@ -246,7 +211,13 @@ export default async function DashboardPage() {
                 )}
               </div>
               <div className="mt-4">
-                <TransactionsButton />
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => router.push("/dashboard/payments")}
+                >
+                  View All Transactions
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -261,8 +232,89 @@ export default async function DashboardPage() {
                 Common tasks and shortcuts
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <DashboardActions />
+            <CardContent className="space-y-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full justify-start" variant="outline">
+                    <Plus className="mr-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Create Payment Link</span>
+                    <span className="sm:hidden">Payment Link</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create Payment Link</DialogTitle>
+                    <DialogDescription>
+                      Create a shareable payment link for your customers
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="title">Title</Label>
+                      <Input
+                        id="title"
+                        value={paymentLinkData.title}
+                        onChange={(e) => setPaymentLinkData({...paymentLinkData, title: e.target.value})}
+                        placeholder="Payment for services"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="description">Description</Label>
+                      <Input
+                        id="description"
+                        value={paymentLinkData.description}
+                        onChange={(e) => setPaymentLinkData({...paymentLinkData, description: e.target.value})}
+                        placeholder="Optional description"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="amount">Amount (PKR)</Label>
+                      <Input
+                        id="amount"
+                        type="number"
+                        value={paymentLinkData.amount}
+                        onChange={(e) => setPaymentLinkData({...paymentLinkData, amount: e.target.value})}
+                        placeholder="1000"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleCreatePaymentLink} disabled={isLoading}>
+                      {isLoading ? "Creating..." : "Create Link"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={() => router.push("/dashboard/checkout")}
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">New Checkout Page</span>
+                <span className="sm:hidden">Checkout</span>
+              </Button>
+
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={() => router.push("/dashboard/customers")}
+              >
+                <Users className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">View Customers</span>
+                <span className="sm:hidden">Customers</span>
+              </Button>
+
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={() => router.push("/dashboard/analytics")}
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Analytics Report</span>
+                <span className="sm:hidden">Analytics</span>
+              </Button>
             </CardContent>
           </Card>
 
