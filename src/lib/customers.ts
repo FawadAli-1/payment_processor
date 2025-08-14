@@ -11,7 +11,7 @@ export interface Customer {
   totalOrders: number;
   lastOrderAt?: string | Date | null;
   status: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: string | Date;
   updatedAt: string | Date;
 }

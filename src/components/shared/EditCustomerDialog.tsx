@@ -77,7 +77,7 @@ export function EditCustomerDialog({
         throw new Error(error.error || "Failed to update customer");
       }
 
-      const { customer: updatedCustomer } = await response.json();
+      await response.json();
       
       toast.success("Customer updated successfully!");
       onOpenChange(false);

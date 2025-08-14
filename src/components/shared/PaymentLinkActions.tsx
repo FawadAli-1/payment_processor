@@ -39,7 +39,7 @@ export function PaymentLinkActions({ link, onEdit, onDelete }: PaymentLinkAction
       setCopied(true);
       toast.success("Link copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       toast.error("Failed to copy link");
     }
   };
@@ -81,7 +81,7 @@ export function PaymentLinkActions({ link, onEdit, onDelete }: PaymentLinkAction
     }
   };
 
-  const completedPayments = link.payments.filter(p => p.status === 'COMPLETED');
+  const completedPayments = link.payments.filter((p: Record<string, unknown>) => p.status === 'COMPLETED');
   const totalRevenue = completedPayments.reduce((sum, p) => sum + p.amount, 0);
   const conversionRate = calculateConversionRate(link.clicks, completedPayments.length);
 

@@ -32,7 +32,7 @@ export function encryptJson(value: unknown): Record<string, unknown> | null {
   };
 }
 
-export function decryptJson(wrapped: any): unknown | null {
+export function decryptJson(wrapped: Record<string, unknown>): unknown | null {
   if (!wrapped || typeof wrapped !== "object" || !wrapped.__enc) return null;
   const key = getKey();
   if (!key) return null;
@@ -49,7 +49,7 @@ export function decryptJson(wrapped: any): unknown | null {
   }
 }
 
-export function isEncryptedCredentials(obj: any): boolean {
+export function isEncryptedCredentials(obj: Record<string, unknown>): boolean {
   return !!(obj && typeof obj === "object" && obj.__enc && obj.iv && obj.data && obj.tag);
 }
 

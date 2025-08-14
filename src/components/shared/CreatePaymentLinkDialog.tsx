@@ -50,7 +50,7 @@ export function CreatePaymentLinkDialog({ onPaymentLinkCreated }: CreatePaymentL
         throw new Error(error.error || "Failed to create payment link");
       }
 
-      const { paymentLink } = await response.json();
+      await response.json();
       
       toast.success("Payment link created successfully!");
       setOpen(false);

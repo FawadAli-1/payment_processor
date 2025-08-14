@@ -177,7 +177,7 @@ export function DashboardClient({ stats, recentTransactions, providers }: Dashbo
             <CardContent>
               <div className="space-y-3 sm:space-y-4">
                 {recentTransactions.length > 0 ? (
-                  recentTransactions.map((transaction: any) => (
+                  recentTransactions.map((transaction: Record<string, unknown>) => (
                     <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3 min-w-0 flex-1">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">

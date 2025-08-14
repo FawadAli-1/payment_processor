@@ -19,7 +19,7 @@ interface CustomerActionsProps {
     address?: string | null;
     status: string;
   };
-  onEdit: (customer: any) => void;
+  onEdit: (customer: Record<string, unknown>) => void;
   onDelete: (id: string) => void;
 }
 

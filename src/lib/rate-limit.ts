@@ -5,7 +5,7 @@ type Bucket = {
 
 type IdempotencyEntry = {
   createdAt: number;
-  body: any;
+  body: Record<string, unknown>;
   status: number;
 };
 
@@ -42,7 +42,7 @@ export function getIdempotentResponse(key: string) {
   return entry;
 }
 
-export function setIdempotentResponse(key: string, status: number, body: any, ttlMs = 24 * 60 * 60 * 1000) {
+export function setIdempotentResponse(key: string, status: number, body: Record<string, unknown>, ttlMs = 24 * 60 * 60 * 1000) {
   idempotency.set(key, { status, body, createdAt: Date.now() });
   // naive cleanup
   setTimeout(() => idempotency.delete(key), ttlMs).unref?.();

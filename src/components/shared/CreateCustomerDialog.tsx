@@ -49,7 +49,7 @@ export function CreateCustomerDialog({ onCustomerCreated }: CreateCustomerDialog
         throw new Error(error.error || "Failed to create customer");
       }
 
-      const { customer } = await response.json();
+      await response.json();
       
       toast.success("Customer created successfully!");
       setOpen(false);

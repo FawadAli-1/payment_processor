@@ -80,7 +80,7 @@ export function EditPaymentLinkDialog({
         throw new Error(error.error || "Failed to update payment link");
       }
 
-      const { paymentLink } = await response.json();
+      await response.json();
       
       toast.success("Payment link updated successfully!");
       onOpenChange(false);

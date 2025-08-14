@@ -39,7 +39,7 @@ interface LinksClientProps {
 export function LinksClient({ initialLinks }: LinksClientProps) {
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>(initialLinks);
   const [filteredLinks, setFilteredLinks] = useState<PaymentLink[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });

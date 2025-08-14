@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    safepay?: any;
+    safepay?: Record<string, unknown>;
   }
 }
 
@@ -62,7 +62,7 @@ export default function SafepayCheckoutClient(props: Props) {
             sandbox: props.apiKey,
             production: props.apiKey,
           },
-          payment: (data: any, actions: any) => {
+          payment: (data: Record<string, unknown>, actions: Record<string, unknown>) => {
             return actions.payment.create({
               transaction: {
                 amount: props.amount,

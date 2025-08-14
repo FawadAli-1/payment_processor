@@ -40,10 +40,10 @@ export interface RecentActivityData {
 }
 
 export function calculateAnalyticsData(
-  currentPayments: any[],
-  previousPayments: any[],
-  currentCustomers: any[],
-  previousCustomers: any[]
+  currentPayments: Record<string, unknown>[],
+  previousPayments: Record<string, unknown>[],
+  currentCustomers: Record<string, unknown>[],
+  previousCustomers: Record<string, unknown>[]
 ): AnalyticsData {
   // Current period calculations
   const currentRevenue = currentPayments
@@ -83,7 +83,7 @@ export function calculateAnalyticsData(
   };
 }
 
-export function calculatePaymentMethodDistribution(payments: any[]): PaymentMethodData[] {
+export function calculatePaymentMethodDistribution(payments: Record<string, unknown>[]): PaymentMethodData[] {
   const completedPayments = payments.filter(p => p.status === 'COMPLETED');
   const totalPayments = completedPayments.length;
 
@@ -116,10 +116,10 @@ export function calculatePaymentMethodDistribution(payments: any[]): PaymentMeth
   }));
 }
 
-export function calculateTopProducts(paymentLinks: any[]): TopProductData[] {
+export function calculateTopProducts(paymentLinks: Record<string, unknown>[]): TopProductData[] {
   const products = paymentLinks.reduce((acc, link) => {
-    const completedPayments = link.payments?.filter((p: any) => p.status === 'COMPLETED') || [];
-    const revenue = completedPayments.reduce((sum: number, p: any) => sum + p.amount, 0);
+    const completedPayments = link.payments?.filter((p: Record<string, unknown>) => p.status === 'COMPLETED') || [];
+    const revenue = completedPayments.reduce((sum: number, p: Record<string, unknown>) => sum + p.amount, 0);
     const sales = completedPayments.length;
 
     if (revenue > 0) {
@@ -137,7 +137,7 @@ export function calculateTopProducts(paymentLinks: any[]): TopProductData[] {
     .slice(0, 4);
 }
 
-export function calculateCustomerSegments(customers: any[]): CustomerSegmentData[] {
+export function calculateCustomerSegments(customers: Record<string, unknown>[]): CustomerSegmentData[] {
   const activeCustomers = customers.filter(c => c.status === 'ACTIVE');
   
   if (activeCustomers.length === 0) {
