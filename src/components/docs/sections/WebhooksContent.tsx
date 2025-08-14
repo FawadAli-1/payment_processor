@@ -132,7 +132,7 @@ export function WebhooksContent() {
                   <li><code className="bg-gray-100 px-1 rounded">amount</code> - Payment amount in smallest currency unit</li>
                   <li><code className="bg-gray-100 px-1 rounded">currency</code> - Three-letter currency code</li>
                   <li><code className="bg-gray-100 px-1 rounded">status</code> - Current payment status</li>
-                  <li><code className="bg-gray-100 px-1 rounded">provider_ref</code> - Provider's reference number</li>
+                  <li><code className="bg-gray-100 px-1 rounded">provider_ref</code> - Provider&apos;s reference number</li>
                 </ul>
               </div>
             </div>
@@ -156,7 +156,7 @@ export function WebhooksContent() {
             <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
               <pre className="text-sm">
 {`// Express.js example
-app.post('/webhooks/payflow', (req, res) => {
+app.post(&apos;/webhooks/payflow&apos;, (req, res) => {
   const event = req.body;
   
   // Handle the webhook event
@@ -182,7 +182,7 @@ app.post('/webhooks/payflow', (req, res) => {
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-sm">2</span>
                 </div>
-                <span className="text-sm text-gray-700">Click "Add Webhook Endpoint"</span>
+                <span className="text-sm text-gray-700">Click &quot;Add Webhook Endpoint&quot;</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
@@ -222,13 +222,13 @@ app.post('/webhooks/payflow', (req, res) => {
             </p>
             <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
               <pre className="text-sm">
-{`const crypto = require('crypto');
+{`const crypto = require(&apos;crypto&apos;);
 
 function verifyWebhookSignature(payload, signature, secret) {
   const expectedSignature = crypto
-    .createHmac('sha256', secret)
+    .createHmac(&apos;sha256&apos;, secret)
     .update(JSON.stringify(payload))
-    .digest('hex');
+    .digest(&apos;hex&apos;);
     
   return crypto.timingSafeEqual(
     Buffer.from(signature),
@@ -279,7 +279,7 @@ function verifyWebhookSignature(payload, signature, secret) {
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-sm">2</span>
                 </div>
-                <span className="text-sm text-gray-700">Click "Send Test Webhook"</span>
+                <span className="text-sm text-gray-700">Click &quot;Send Test Webhook&quot;</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">

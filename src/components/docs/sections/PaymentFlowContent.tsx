@@ -130,7 +130,7 @@ export function PaymentFlowContent() {
           <ul className="space-y-2 text-gray-700">
             <li>• Provider availability and status</li>
             <li>• Transaction amount and currency</li>
-            <li>• Customer's preferred payment method</li>
+            <li>• Customer&apos;s preferred payment method</li>
             <li>• Provider performance and success rates</li>
             <li>• Business configuration preferences</li>
           </ul>

@@ -54,7 +54,7 @@ export function BestPracticesContent() {
               </div>
               
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg text-red-700">❌ Don't Do This</h3>
+                <h3 className="font-semibold text-lg text-red-700">❌ Don&apos;t Do This</h3>
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
@@ -62,7 +62,7 @@ export function BestPracticesContent() {
                   </li>
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-                    <span>Don't store sensitive data in logs</span>
+                    <span>Don&apos;t store sensitive data in logs</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
@@ -70,7 +70,7 @@ export function BestPracticesContent() {
                   </li>
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-                    <span>Don't ignore webhook failures</span>
+                    <span>Don&apos;t ignore webhook failures</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
@@ -98,19 +98,19 @@ export function BestPracticesContent() {
 try {
   const payment = await payflow.payments.create({
     amount: 2500,
-    currency: 'PKR'
+    currency: &apos;PKR&apos;
   });
 } catch (error) {
-  if (error.code === 'card_declined') {
+  if (error.code === &apos;card_declined&apos;) {
     // Handle declined card
-    showUserMessage('Payment declined. Please try another card.');
-  } else if (error.code === 'insufficient_funds') {
+    showUserMessage(&apos;Payment declined. Please try another card.&apos;);
+  } else if (error.code === &apos;insufficient_funds&apos;) {
     // Handle insufficient funds
-    showUserMessage('Insufficient funds. Please try another payment method.');
+    showUserMessage(&apos;Insufficient funds. Please try another payment method.&apos;);
   } else {
     // Log unexpected errors
-    console.error('Payment error:', error);
-    showUserMessage('Payment failed. Please try again later.');
+    console.error(&apos;Payment error:&apos;, error);
+    showUserMessage(&apos;Payment failed. Please try again later.&apos;);
   }
 }`}
               </pre>
@@ -201,7 +201,7 @@ try {
             
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>Pro Tip:</strong> Always test with PayFlow's test mode first. Use test payment methods 
+                <strong>Pro Tip:</strong> Always test with PayFlow&apos;s test mode first. Use test payment methods 
                 and verify webhook delivery before going live.
               </p>
             </div>
@@ -213,7 +213,7 @@ try {
         <CardHeader>
           <CardTitle className="text-2xl">Monitoring & Observability</CardTitle>
           <CardDescription>
-            Keep track of your integration's health
+            Keep track of your integration&apos;s health
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -13,7 +13,7 @@ export function PciComplianceContent() {
           PCI DSS Compliance
         </h1>
         <p className="text-xl text-gray-600">
-          Understanding PayFlow's PCI DSS compliance and what it means for your business.
+          Understanding PayFlow&apos;s PCI DSS compliance and what it means for your business.
         </p>
       </div>
 
@@ -34,7 +34,7 @@ export function PciComplianceContent() {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
                 <strong>Important:</strong> PayFlow is PCI DSS Level 1 compliant, the highest level of certification 
-                available in the payments industry. This means we handle all the complex security requirements so you don't have to.
+                available in the payments industry. This means we handle all the complex security requirements so you don&apos;t have to.
               </p>
             </div>
           </div>
@@ -150,7 +150,7 @@ export function PciComplianceContent() {
                   </li>
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <span>Don't store card data</span>
+                    <span>Don&apos;t store card data</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <AlertTriangle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />

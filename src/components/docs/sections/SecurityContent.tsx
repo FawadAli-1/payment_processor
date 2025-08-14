@@ -13,7 +13,7 @@ export function SecurityContent() {
           Security
         </h1>
         <p className="text-xl text-gray-600">
-          Learn about PayFlow's security measures and how to keep your integration secure.
+          Learn about PayFlow&apos;s security measures and how to keep your integration secure.
         </p>
       </div>
 
@@ -146,15 +146,15 @@ export function SecurityContent() {
               <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
                 <pre className="text-sm">
 {`// Verify webhook signature
-const signature = req.headers['x-payflow-signature'];
+const signature = req.headers[&apos;x-payflow-signature&apos;];
 const payload = req.body;
 const expectedSignature = crypto
-  .createHmac('sha256', webhookSecret)
+  .createHmac(&apos;sha256&apos;, webhookSecret)
   .update(JSON.stringify(payload))
-  .digest('hex');
+  .digest(&apos;hex&apos;);
 
 if (signature !== expectedSignature) {
-  return res.status(400).json({ error: 'Invalid signature' });
+  return res.status(400).json({ error: &apos;Invalid signature&apos; });
 }`}
                 </pre>
               </div>

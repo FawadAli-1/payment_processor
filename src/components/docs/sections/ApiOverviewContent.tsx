@@ -439,7 +439,7 @@ Content-Type: application/json
           
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600 mb-3">
-              Don't see your language? We provide comprehensive REST API documentation for all integrations.
+              Don&apos;t see your language? We provide comprehensive REST API documentation for all integrations.
             </p>
             <a 
               href="https://github.com/payflow/sdks" 

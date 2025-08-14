@@ -127,7 +127,7 @@ export function PayFastContent() {
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-sm">3</span>
                 </div>
-                <span className="text-sm text-gray-700">Select PayFast and click "Configure"</span>
+                <span className="text-sm text-gray-700">Select PayFast and click &quot;Configure&quot;</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">

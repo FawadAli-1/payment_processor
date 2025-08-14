@@ -19,13 +19,13 @@ export function IntroductionContent() {
       {/* Header */}
       <div className="text-center space-y-4">
         <Badge variant="secondary" className="text-sm">
-          🚀 Pakistan's Unified Payment Platform
+          🚀 Pakistan&apos;s Unified Payment Platform
         </Badge>
         <h1 className="text-4xl font-bold text-gray-900">
           Welcome to PayFlow
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          The modern payment platform that unifies Pakistan's leading payment processors into one simple, developer-friendly API.
+          The modern payment platform that unifies Pakistan&apos;s leading payment processors into one simple, developer-friendly API.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/docs/quickstart">
@@ -58,7 +58,7 @@ export function IntroductionContent() {
             preferred payment method without the complexity of managing multiple integrations.
           </p>
           <p className="text-gray-700">
-            Whether you're building an e-commerce site, a subscription service, or a marketplace, PayFlow provides the 
+            Whether you&apos;re building an e-commerce site, a subscription service, or a marketplace, PayFlow provides the 
             tools you need to accept payments quickly and securely.
           </p>
         </CardContent>
@@ -147,7 +147,7 @@ export function IntroductionContent() {
         <CardHeader>
           <CardTitle className="text-2xl">Supported Payment Providers</CardTitle>
           <CardDescription>
-            PayFlow integrates with Pakistan's most popular payment methods
+            PayFlow integrates with Pakistan&apos;s most popular payment methods
           </CardDescription>
         </CardHeader>
         <CardContent>

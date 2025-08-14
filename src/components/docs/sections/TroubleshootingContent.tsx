@@ -40,7 +40,7 @@ export function TroubleshootingContent() {
                   <li>Invalid or expired API key</li>
                   <li>Missing Authorization header</li>
                   <li>Using test key for live endpoints or vice versa</li>
-                  <li>API key doesn't have required permissions</li>
+                  <li>API key doesn&apos;t have required permissions</li>
                 </ul>
               </div>
               <div className="mt-3 p-3 bg-white rounded border">
@@ -48,7 +48,7 @@ export function TroubleshootingContent() {
                 <ol className="text-sm space-y-1 list-decimal list-inside">
                   <li>Verify your API key is correct</li>
                   <li>Check the Authorization header format: <code className="bg-gray-100 px-1 rounded">Bearer YOUR_API_KEY</code></li>
-                  <li>Ensure you're using the right key for your environment (test vs live)</li>
+                  <li>Ensure you&apos;re using the right key for your environment (test vs live)</li>
                   <li>Check API key permissions in your dashboard</li>
                 </ol>
               </div>
@@ -188,7 +188,7 @@ export function TroubleshootingContent() {
                 <p className="text-sm font-medium mb-2">Solution:</p>
                 <ol className="text-sm space-y-1 list-decimal list-inside">
                   <li>Check your internet connection</li>
-                  <li>Verify you're not hitting rate limits</li>
+                  <li>Verify you&apos;re not hitting rate limits</li>
                   <li>Use appropriate timeout values</li>
                   <li>Implement retry logic with backoff</li>
                 </ol>
@@ -228,7 +228,7 @@ export function TroubleshootingContent() {
           <div className="space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>Still having issues?</strong> If you've tried the solutions above and are still experiencing problems, 
+                <strong>Still having issues?</strong> If you&apos;ve tried the solutions above and are still experiencing problems, 
                 contact our support team with:
               </p>
               <ul className="text-sm text-blue-800 mt-2 list-disc list-inside space-y-1">
@@ -236,7 +236,7 @@ export function TroubleshootingContent() {
                 <li>Steps to reproduce the issue</li>
                 <li>Error messages and logs</li>
                 <li>Your PayFlow account ID</li>
-                <li>What you've already tried</li>
+                <li>What you&apos;ve already tried</li>
               </ul>
             </div>
             

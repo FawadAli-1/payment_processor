@@ -32,7 +32,7 @@ export function QuickStartContent() {
       {/* Steps Overview */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">What You'll Build</CardTitle>
+          <CardTitle className="text-2xl">What You&apos;ll Build</CardTitle>
           <CardDescription>
             A simple payment flow that creates a payment link and redirects customers to checkout
           </CardDescription>
@@ -85,7 +85,7 @@ export function QuickStartContent() {
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <span>Visit <Link href="/" className="text-blue-600 hover:underline">payflow.com</Link> and click "Get Started"</span>
+                <span>Visit <Link href="/" className="text-blue-600 hover:underline">payflow.com</Link> and click &quot;Get Started&quot;</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
@@ -132,13 +132,13 @@ export function QuickStartContent() {
 {`curl -X POST https://api.payflow.com/v1/payment_links \\
   -H "Authorization: Bearer pk_live_YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{
+  -d &apos;{
     "title": "Premium Course Access",
     "description": "Get access to our premium course content",
     "amount": 2500,
     "currency": "PKR",
     "expires_at": "2024-12-31T23:59:59Z"
-  }'`}
+  }&apos;`}
                   </pre>
                 </div>
                 <Button variant="outline" size="sm" className="gap-2">
@@ -150,23 +150,23 @@ export function QuickStartContent() {
               <TabsContent value="javascript" className="space-y-4">
                 <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
                   <pre className="text-sm">
-{`const response = await fetch('https://api.payflow.com/v1/payment_links', {
-  method: 'POST',
+{`const response = await fetch(&apos;https://api.payflow.com/v1/payment_links&apos;, {
+  method: &apos;POST&apos;,
   headers: {
-    'Authorization': 'Bearer pk_live_YOUR_API_KEY',
-    'Content-Type': 'application/json'
+    &apos;Authorization&apos;: &apos;Bearer pk_live_YOUR_API_KEY&apos;,
+    &apos;Content-Type&apos;: &apos;application/json&apos;
   },
   body: JSON.stringify({
-    title: 'Premium Course Access',
-    description: 'Get access to our premium course content',
+    title: &apos;Premium Course Access&apos;,
+    description: &apos;Get access to our premium course content&apos;,
     amount: 2500,
-    currency: 'PKR',
-    expires_at: '2024-12-31T23:59:59Z'
+    currency: &apos;PKR&apos;,
+    expires_at: &apos;2024-12-31T23:59:59Z&apos;
   })
 });
 
 const paymentLink = await response.json();
-console.log('Payment URL:', paymentLink.url);`}
+console.log(&apos;Payment URL:&apos;, paymentLink.url);`}
                   </pre>
                 </div>
                 <Button variant="outline" size="sm" className="gap-2">
@@ -181,22 +181,22 @@ console.log('Payment URL:', paymentLink.url);`}
 {`import requests
 
 response = requests.post(
-    'https://api.payflow.com/v1/payment_links',
+    &apos;https://api.payflow.com/v1/payment_links&apos;,
     headers={
-        'Authorization': 'Bearer pk_live_YOUR_API_KEY',
-        'Content-Type': 'application/json'
+        &apos;Authorization&apos;: &apos;Bearer pk_live_YOUR_API_KEY&apos;,
+        &apos;Content-Type&apos;: &apos;application/json&apos;
     },
     json={
-        'title': 'Premium Course Access',
-        'description': 'Get access to our premium course content',
-        'amount': 2500,
-        'currency': 'PKR',
-        'expires_at': '2024-12-31T23:59:59Z'
+        &apos;title&apos;: &apos;Premium Course Access&apos;,
+        &apos;description&apos;: &apos;Get access to our premium course content&apos;,
+        &apos;amount&apos;: 2500,
+        &apos;currency&apos;: &apos;PKR&apos;,
+        &apos;expires_at&apos;: &apos;2024-12-31T23:59:59Z&apos;
     }
 )
 
 payment_link = response.json()
-print('Payment URL:', payment_link['url'])`}
+print(&apos;Payment URL:&apos;, payment_link[&apos;url&apos;])`}
                   </pre>
                 </div>
                 <Button variant="outline" size="sm" className="gap-2">
@@ -223,7 +223,7 @@ print('Payment URL:', payment_link['url'])`}
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-700">
-              When you create a payment link, you'll receive a response like this:
+              When you create a payment link, you&apos;ll receive a response like this:
             </p>
             <div className="bg-gray-50 p-4 rounded-lg">
               <pre className="text-sm text-gray-800">
@@ -240,7 +240,7 @@ print('Payment URL:', payment_link['url'])`}
             </div>
             <p className="text-gray-700">
               Share the <code className="bg-gray-200 px-2 py-1 rounded">url</code> with your customer. 
-              They'll be redirected to a beautiful hosted checkout page where they can complete their payment.
+              They&apos;ll be redirected to a beautiful hosted checkout page where they can complete their payment.
             </p>
           </CardContent>
         </Card>
@@ -266,17 +266,17 @@ print('Payment URL:', payment_link['url'])`}
             <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
               <pre className="text-sm">
 {`// Your webhook endpoint
-app.post('/webhooks/payflow', (req, res) => {
+app.post(&apos;/webhooks/payflow&apos;, (req, res) => {
   const event = req.body;
   
   switch (event.type) {
-    case 'payment.succeeded':
+    case &apos;payment.succeeded&apos;:
       // Handle successful payment
-      console.log('Payment completed:', event.data.id);
+      console.log(&apos;Payment completed:&apos;, event.data.id);
       break;
-    case 'payment.failed':
+    case &apos;payment.failed&apos;:
       // Handle failed payment
-      console.log('Payment failed:', event.data.id);
+      console.log(&apos;Payment failed:&apos;, event.data.id);
       break;
   }
   
@@ -331,7 +331,7 @@ app.post('/webhooks/payflow', (req, res) => {
       {/* Next Steps */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">What's Next?</CardTitle>
+          <CardTitle className="text-2xl">What&apos;s Next?</CardTitle>
           <CardDescription>
             Explore more advanced features and integrations
           </CardDescription>

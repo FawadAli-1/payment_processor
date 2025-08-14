@@ -24,7 +24,7 @@ export function SdksContent() {
           <p className="text-sm text-orange-800">
             <strong>Note:</strong> SDKs and client libraries are currently in development. 
             For now, you can integrate with PayFlow using our REST API directly. 
-            We'll notify you when SDKs become available!
+            We&apos;ll notify you when SDKs become available!
           </p>
         </div>
       </div>
@@ -43,7 +43,7 @@ export function SdksContent() {
             </div>
             <h3 className="text-lg font-semibold text-gray-700 mb-2">SDKs Coming Soon</h3>
             <p className="text-gray-600 mb-4">
-              We're working hard to bring you official SDKs for popular programming languages.
+              We&apos;re working hard to bring you official SDKs for popular programming languages.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
               <p className="text-sm text-blue-800">
@@ -74,7 +74,7 @@ export function SdksContent() {
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
               <p className="text-sm text-green-800">
                 <strong>Want to contribute?</strong> Build a library for your favorite language and 
-                share it with the community. We'll feature it here once it's ready!
+                share it with the community. We&apos;ll feature it here once it&apos;s ready!
               </p>
             </div>
           </div>
@@ -95,7 +95,7 @@ export function SdksContent() {
             </div>
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Examples Coming Soon</h3>
             <p className="text-gray-600 mb-4">
-              Once our SDKs are available, you'll find quick start examples here.
+              Once our SDKs are available, you&apos;ll find quick start examples here.
             </p>
             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 max-w-md mx-auto">
               <p className="text-sm text-purple-800">

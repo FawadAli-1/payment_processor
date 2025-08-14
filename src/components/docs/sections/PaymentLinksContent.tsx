@@ -27,7 +27,7 @@ export function PaymentLinksContent() {
         <CardContent className="space-y-4">
           <p className="text-gray-700">
             Payment links are shareable URLs that take customers directly to a hosted checkout page. 
-            They're perfect for one-time sales, donations, or any scenario where you need a simple payment solution.
+            They&apos;re perfect for one-time sales, donations, or any scenario where you need a simple payment solution.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -137,7 +137,7 @@ export function PaymentLinksContent() {
                   <h4 className="font-medium">Title</h4>
                   <p className="text-sm text-gray-600">Product or service name</p>
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 block">
-                    Example: "Premium Course Access"
+                    Example: &quot;Premium Course Access&quot;
                   </code>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-3">
@@ -151,7 +151,7 @@ export function PaymentLinksContent() {
                   <h4 className="font-medium">Currency</h4>
                   <p className="text-sm text-gray-600">Three-letter currency code</p>
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 block">
-                    Example: "PKR"
+                    Example: &quot;PKR&quot;
                   </code>
                 </div>
               </div>
@@ -164,28 +164,28 @@ export function PaymentLinksContent() {
                   <h4 className="font-medium">Description</h4>
                   <p className="text-sm text-gray-600">Detailed product description</p>
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 block">
-                    Example: "Complete course with lifetime access"
+                    Example: &quot;Complete course with lifetime access&quot;
                   </code>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-3">
                   <h4 className="font-medium">Expires At</h4>
                   <p className="text-sm text-gray-600">When the link expires</p>
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 block">
-                    Example: "2024-12-31T23:59:59Z"
+                    Example: &quot;2024-12-31T23:59:59Z&quot;
                   </code>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-3">
                   <h4 className="font-medium">Success URL</h4>
                   <p className="text-sm text-gray-600">Where to redirect after success</p>
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 block">
-                    Example: "https://yoursite.com/success"
+                    Example: &quot;https://yoursite.com/success&quot;
                   </code>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-3">
                   <h4 className="font-medium">Cancel URL</h4>
                   <p className="text-sm text-gray-600">Where to redirect if cancelled</p>
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 block">
-                    Example: "https://yoursite.com/cancel"
+                    Example: &quot;https://yoursite.com/cancel&quot;
                   </code>
                 </div>
               </div>

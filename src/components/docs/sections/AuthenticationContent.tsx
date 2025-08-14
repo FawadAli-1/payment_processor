@@ -40,7 +40,7 @@ export function AuthenticationContent() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg text-green-700">✅ Do's</h3>
+              <h3 className="font-semibold text-lg text-green-700">✅ Do&apos;s</h3>
               <ul className="space-y-2 text-sm text-gray-700">
                 <li className="flex items-start space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -58,7 +58,7 @@ export function AuthenticationContent() {
             </div>
             
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg text-red-700">❌ Don'ts</h3>
+              <h3 className="font-semibold text-lg text-red-700">❌ Don&apos;ts</h3>
               <ul className="space-y-2 text-sm text-gray-700">
                 <li className="flex items-start space-x-2">
                   <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
@@ -66,7 +66,7 @@ export function AuthenticationContent() {
                 </li>
                 <li className="flex items-start space-x-2">
                   <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-                  <span>Don't expose keys in client-side code</span>
+                  <span>Don&apos;t expose keys in client-side code</span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />

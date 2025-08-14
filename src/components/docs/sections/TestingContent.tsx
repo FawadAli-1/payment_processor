@@ -132,7 +132,7 @@ export function TestingContent() {
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-sm">3</span>
                 </div>
-                <span className="text-sm text-gray-700">Click "Send Test Webhook"</span>
+                <span className="text-sm text-gray-700">Click &quot;Send Test Webhook&quot;</span>
               </div>
             </div>
           </div>

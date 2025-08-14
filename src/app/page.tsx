@@ -26,7 +26,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
           <div className="text-center max-w-4xl mx-auto">
             <Badge variant="secondary" className="mb-6">
-              🚀 Now Supporting Pakistan's Top Payment Providers
+              🚀 Now Supporting Pakistan&apos;s Top Payment Providers
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               The Modern Payment Platform for{" "}
@@ -150,7 +150,7 @@ export default function HomePage() {
               Supported Payment Providers
             </h2>
             <p className="text-xl text-gray-600">
-              We integrate with Pakistan's leading payment processors
+              We integrate with Pakistan&apos;s leading payment processors
             </p>
           </div>
           

@@ -13,7 +13,7 @@ export function SupportContent() {
           Get Help & Support
         </h1>
         <p className="text-xl text-gray-600">
-          We're here to help you succeed with PayFlow. Multiple ways to get support.
+          We&apos;re here to help you succeed with PayFlow. Multiple ways to get support.
         </p>
       </div>
 
@@ -104,7 +104,7 @@ export function SupportContent() {
               </p>
               <p className="text-sm text-gray-700">
                 <strong>Solution:</strong> Check that your API key is correct and included in the Authorization header. 
-                Ensure you're using the right key for test vs live mode.
+                Ensure you&apos;re using the right key for test vs live mode.
               </p>
             </div>
             
