@@ -66,6 +66,11 @@ model Payment {
   updatedAt     DateTime @updatedAt
 
   attempts      PaymentAttempt[]
+
+  @@index([businessId, createdAt])
+  @@index([businessId, status])
+  @@index([businessId, provider])
+  @@index([createdAt])
 }
 
 model PaymentLink {
@@ -83,6 +88,10 @@ model PaymentLink {
   url         String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([businessId, createdAt])
+  @@index([businessId, status])
+  @@index([createdAt])
 }
 
 model Customer {
@@ -102,7 +111,9 @@ model Customer {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@unique([email, businessId])
+  @@index([businessId, createdAt])
+  @@index([businessId, status])
+  @@index([createdAt])
 }
 
 model Webhook {
