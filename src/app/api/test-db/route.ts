@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { userId } = await auth();
     
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       hasBusiness: !!business,
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Database connection failed" },
       { status: 500 }

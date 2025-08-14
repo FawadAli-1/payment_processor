@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { 
   Users, 
   Search,
-  Filter,
   Calendar,
   DollarSign,
   Mail,
@@ -33,49 +32,29 @@ interface Customer {
   totalOrders: number;
   lastOrderAt?: string | Date | null;
   status: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: string | Date;
   updatedAt: string | Date;
 }
 
-export function CustomersClient() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+interface CustomersClientProps {
+  initialCustomers: Customer[];
+}
+
+export function CustomersClient({ initialCustomers }: CustomersClientProps) {
+  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const fetchCustomers = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("search", searchQuery);
-      if (filterStatus !== "all") params.append("status", filterStatus);
-      if (dateRange.start) params.append("startDate", dateRange.start);
-      if (dateRange.end) params.append("endDate", dateRange.end);
-
-      const response = await fetch(`/api/customers?${params.toString()}`);
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch customers");
-      }
-
-      const data = await response.json();
-      setCustomers(data.customers);
-      setFilteredCustomers(data.customers);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-      toast.error("Failed to fetch customers");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Initialize filter view from server data
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    setFilteredCustomers(initialCustomers);
+  }, [initialCustomers]);
 
   useEffect(() => {
     const filtered = filterCustomers(customers, searchQuery, filterStatus, dateRange);
@@ -83,11 +62,11 @@ export function CustomersClient() {
   }, [customers, searchQuery, filterStatus, dateRange]);
 
   const handleCustomerCreated = () => {
-    fetchCustomers();
+    window.location.reload();
   };
 
   const handleCustomerUpdated = () => {
-    fetchCustomers();
+    window.location.reload();
     setEditCustomer(null);
   };
 
@@ -118,7 +97,7 @@ export function CustomersClient() {
       } else {
         toast.error("Failed to export customers");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to export customers");
     }
   };

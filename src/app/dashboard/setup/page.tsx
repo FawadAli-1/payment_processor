@@ -35,6 +35,8 @@ export default function SetupPage() {
           }
         }
       } catch (error) {
+        console.log(error);
+        
         // Silently handle error, user can still proceed with setup
       } finally {
         setIsChecking(false);
@@ -68,6 +70,8 @@ export default function SetupPage() {
         setError(errorData.error || "Failed to create business");
       }
     } catch (error) {
+      console.log(error);
+      
       setError("Failed to create business. Please try again.");
     } finally {
       setIsLoading(false);

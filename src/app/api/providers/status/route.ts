@@ -32,7 +32,7 @@ export async function GET() {
       lastChecked: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to check provider status" },
       { status: 500 }

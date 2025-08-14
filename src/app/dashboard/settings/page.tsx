@@ -4,8 +4,29 @@ import { SecuritySettingsCard } from "@/components/shared/SecuritySettingsCard";
 import { ApiKeysCard } from "@/components/shared/ApiKeysCard";
 import { NotificationsCard } from "@/components/shared/NotificationsCard";
 import { AccountActionsCard } from "@/components/shared/AccountActionsCard";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
 
-export default function SettingsPage() {
+// Force dynamic rendering to ensure fresh data
+export const dynamic = 'force-dynamic';
+
+export default async function SettingsPage() {
+  const { userId } = await auth();
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  const user = await db.user.findUnique({ where: { clerkId: userId } });
+  if (!user) {
+    redirect("/dashboard/setup");
+  }
+
+  const business = await db.business.findFirst({ where: { userId: user!.id } });
+  if (!business) {
+    redirect("/dashboard/setup");
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}

@@ -6,12 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   TrendingUp, 
-  TrendingDown,
   DollarSign,
   Users,
   CreditCard,
   BarChart3,
-  Calendar,
   Download,
   ArrowUpRight,
   ArrowDownRight
@@ -92,7 +90,7 @@ export function AnalyticsClient() {
 
   useEffect(() => {
     fetchAnalytics();
-  }, [period]);
+  }, [period, fetchAnalytics]);
 
   const handleExport = async () => {
     try {
@@ -111,7 +109,7 @@ export function AnalyticsClient() {
       } else {
         toast.error("Failed to export analytics");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to export analytics");
     }
   };

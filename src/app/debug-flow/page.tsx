@@ -7,7 +7,6 @@ export default function DebugFlowPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -16,6 +15,8 @@ export default function DebugFlowPage() {
         const result = await response.json();
         setData(result);
       } catch (err) {
+        console.log(err);
+        
         setError("Failed to check database status");
       } finally {
         setLoading(false);
@@ -51,6 +52,8 @@ export default function DebugFlowPage() {
         alert(`Failed to create business: ${result.error}`);
       }
     } catch (err) {
+      console.log(err);
+      
       alert("Failed to create business. Please try again.");
     }
   };

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   DollarSign
@@ -10,6 +10,9 @@ import { calculatePaymentStats, formatPaymentAmount } from "@/lib/payments";
 import { PaymentsActions } from "./payments-actions";
 import { PaymentsFilters } from "./payments-filters";
 import { PaymentsTable } from "./payments-table";
+import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function PaymentsPage() {
   const { userId } = await auth();
@@ -20,12 +23,12 @@ export default async function PaymentsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h1>
           <p className="text-gray-600 mb-4">Please sign in to access your payments.</p>
-          <a 
+          <Link
             href="/sign-in" 
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Sign In
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -42,12 +45,12 @@ export default async function PaymentsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h1>
           <p className="text-gray-600 mb-4">Your user account could not be found.</p>
-          <a 
+          <Link
             href="/sign-in" 
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Sign In Again
-          </a>
+          </Link>
         </div>
       </div>
     );

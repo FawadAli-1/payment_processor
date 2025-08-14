@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Link as LinkIcon, 
@@ -12,13 +10,11 @@ import {
   Users,
   Eye,
   Search,
-  Filter
 } from "lucide-react";
 import { CreatePaymentLinkDialog } from "@/components/shared/CreatePaymentLinkDialog";
 import { PaymentLinkActions } from "@/components/shared/PaymentLinkActions";
 import { EditPaymentLinkDialog } from "@/components/shared/EditPaymentLinkDialog";
 import { calculatePaymentLinkStats, filterPaymentLinks, formatPaymentLinkAmount } from "@/lib/payment-links";
-import { toast } from "sonner";
 
 interface PaymentLink {
   id: string;
@@ -28,6 +24,7 @@ interface PaymentLink {
   currency: string;
   status: string;
   clicks: number;
+  businessId: string;
   payments: Array<{ id: string; amount: number; status: string; createdAt: string | Date }>;
   url: string;
   expiresAt?: string | Date | null;
@@ -35,44 +32,24 @@ interface PaymentLink {
   updatedAt: string | Date;
 }
 
-export function LinksClient() {
-  const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
+interface LinksClientProps {
+  initialLinks: PaymentLink[];
+}
+
+export function LinksClient({ initialLinks }: LinksClientProps) {
+  const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>(initialLinks);
   const [filteredLinks, setFilteredLinks] = useState<PaymentLink[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [editLink, setEditLink] = useState<PaymentLink | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const fetchPaymentLinks = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("search", searchQuery);
-      if (filterStatus !== "all") params.append("status", filterStatus);
-      if (dateRange.start) params.append("startDate", dateRange.start);
-      if (dateRange.end) params.append("endDate", dateRange.end);
-
-      const response = await fetch(`/api/payment-links?${params.toString()}`);
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch payment links");
-      }
-
-      const data = await response.json();
-      setPaymentLinks(data.paymentLinks);
-      setFilteredLinks(data.paymentLinks);
-    } catch (error) {
-      console.error("Error fetching payment links:", error);
-      toast.error("Failed to fetch payment links");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Initialize filtered list from server-provided data
   useEffect(() => {
-    fetchPaymentLinks();
-  }, []);
+    setFilteredLinks(initialLinks);
+  }, [initialLinks]);
 
   useEffect(() => {
     const filtered = filterPaymentLinks(paymentLinks, searchQuery, filterStatus, dateRange);
@@ -80,11 +57,12 @@ export function LinksClient() {
   }, [paymentLinks, searchQuery, filterStatus, dateRange]);
 
   const handlePaymentLinkCreated = () => {
-    fetchPaymentLinks();
+    // Optimistic: trigger a refresh from the server page
+    window.location.reload();
   };
 
   const handlePaymentLinkUpdated = () => {
-    fetchPaymentLinks();
+    window.location.reload();
     setEditLink(null);
   };
 

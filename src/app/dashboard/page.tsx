@@ -15,6 +15,7 @@ import { db } from "@/lib/db";
 import { formatCurrency, calculateStats } from "@/lib/utils";
 import { DashboardActions } from "./dashboard-actions";
 import { TransactionsButton } from "./transactions-button";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -25,12 +26,12 @@ export default async function DashboardPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h1>
           <p className="text-gray-600 mb-4">Please sign in to access your dashboard.</p>
-          <a 
+          <Link
             href="/sign-in" 
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Sign In
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -47,12 +48,12 @@ export default async function DashboardPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h1>
           <p className="text-gray-600 mb-4">Your user account could not be found.</p>
-          <a 
+          <Link
             href="/sign-in" 
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Sign In Again
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -99,6 +100,8 @@ export default async function DashboardPage() {
       providers = data.providers;
     }
   } catch (error) {
+    console.log(error);
+    
     // Fallback to default status if API fails
   }
 
@@ -107,7 +110,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="mb-6 lg:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm sm:text-base text-gray-600 mt-1">Welcome back! Here's what's happening with your business.</p>
+        <p className="text-sm sm:text-base text-gray-600 mt-1">Welcome back! Here&apos;s what&apos;s happening with your business.</p>
       </div>
 
       {/* Stats Cards */}

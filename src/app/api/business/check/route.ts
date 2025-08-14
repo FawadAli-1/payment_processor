@@ -33,7 +33,7 @@ export async function GET() {
       } : null
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to check business status" },
       { status: 500 }

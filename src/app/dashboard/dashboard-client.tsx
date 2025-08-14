@@ -24,16 +24,19 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Activity,
-  Plus,
-  Link,
-  ExternalLink
+  Plus
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 interface DashboardClientProps {
-  stats: any;
-  recentTransactions: any[];
-  providers: any[];
+  stats: {
+    revenue: { current: number; change: number };
+    transactions: { current: number; change: number };
+    successRate: { current: number; change: number };
+    customers: { current: number; change: number };
+  };
+  recentTransactions: Record<string, unknown>[];
+  providers: Record<string, unknown>[];
 }
 
 export function DashboardClient({ stats, recentTransactions, providers }: DashboardClientProps) {
@@ -58,7 +61,6 @@ export function DashboardClient({ stats, recentTransactions, providers }: Dashbo
       });
 
       if (response.ok) {
-        const result = await response.json();
         // Reset form
         setPaymentLinkData({
           title: "",
@@ -72,7 +74,7 @@ export function DashboardClient({ stats, recentTransactions, providers }: Dashbo
         const error = await response.json();
         alert(error.error || "Failed to create payment link");
       }
-    } catch (error) {
+    } catch {
       alert("Failed to create payment link");
     } finally {
       setIsLoading(false);
@@ -96,7 +98,7 @@ export function DashboardClient({ stats, recentTransactions, providers }: Dashbo
       {/* Header */}
       <div className="mb-6 lg:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm sm:text-base text-gray-600 mt-1">Welcome back! Here's what's happening with your business.</p>
+        <p className="text-sm sm:text-base text-gray-600 mt-1">Welcome back! Here&apos;s what&apos;s happening with your business.</p>
       </div>
 
       {/* Stats Cards */}

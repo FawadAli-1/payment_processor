@@ -1,120 +1,83 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CreditCard } from "lucide-react";
-import { toast } from "sonner";
+import { PaymentSettingsCardClient } from "./PaymentSettingsCardClient";
+import { getCurrentBusiness } from "@/lib/auth";
+import { db } from "@/lib/db";
 
-interface PaymentProvider {
-  id: string;
+// Import the type for proper typing
+type ProviderId = "payfast" | "safepay" | "easypaisa" | "jazzcash";
+
+interface ProviderItem {
+  id: ProviderId;
   name: string;
   description: string;
-  status: "connected" | "configure" | "disabled";
   color: string;
   letter: string;
+  status: "connected" | "configure" | "disabled";
+  enum: string;
+  hasCredentials: boolean;
+  existingConfig: {
+    enabled: boolean;
+    credentials: Record<string, string>;
+  } | null;
 }
 
-export function PaymentSettingsCard() {
-  const providers: PaymentProvider[] = [
-    {
-      id: "payfast",
-      name: "PayFast",
-      description: "Bank transfers and cards",
-      status: "connected",
-      color: "bg-blue-100",
-      letter: "P"
-    },
-    {
-      id: "safepay",
-      name: "Safepay",
-      description: "Digital wallet payments",
-      status: "connected",
-      color: "bg-green-100",
-      letter: "S"
-    },
-    {
-      id: "easypaisa",
-      name: "Easypaisa",
-      description: "Mobile money transfers",
-      status: "connected",
-      color: "bg-purple-100",
-      letter: "E"
-    },
-    {
-      id: "jazzcash",
-      name: "JazzCash",
-      description: "Mobile payments",
-      status: "configure",
-      color: "bg-orange-100",
-      letter: "J"
-    }
-  ];
+export async function PaymentSettingsCard() {
+  const business = await getCurrentBusiness();
+  if (!business) {
+    return null;
+  }
 
-  const handleProviderAction = (provider: PaymentProvider) => {
-    if (provider.status === "connected") {
-      toast.info(`${provider.name} is already connected`);
-    } else if (provider.status === "configure") {
-      toast.info(`Configuring ${provider.name}...`);
-      // This would typically open a configuration modal
-    } else {
-      toast.info(`${provider.name} is currently disabled`);
+  // Fetch provider configurations on the server
+  const providerConfigs = await db.providerConfig.findMany({
+    where: { businessId: business.id },
+    select: {
+      provider: true,
+      enabled: true,
+      credentials: true,
     }
-  };
+  });
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "connected":
-        return <Badge variant="default">Connected</Badge>;
-      case "configure":
-        return <Badge variant="secondary">Configure</Badge>;
-      case "disabled":
-        return <Badge variant="outline">Disabled</Badge>;
-      default:
-        return <Badge variant="outline">Unknown</Badge>;
-    }
-  };
+  // Transform data for the client component
+  const providers: ProviderItem[] = [
+    { id: "safepay" as const, name: "Safepay", description: "Digital wallet & cards", color: "bg-green-100", letter: "S", enum: "SAFEPAY" },
+    { id: "jazzcash" as const, name: "JazzCash", description: "Mobile payments", color: "bg-orange-100", letter: "J", enum: "JAZZCASH" },
+    { id: "easypaisa" as const, name: "Easypaisa", description: "Mobile money transfers", color: "bg-purple-100", letter: "E", enum: "EASYPAISA" },
+    { id: "payfast" as const, name: "PayFast", description: "Bank transfers and cards", color: "bg-blue-100", letter: "P", enum: "PAYFAST" },
+  ].map(meta => {
+    const config = providerConfigs.find(p => p.provider === meta.enum);
+    // Only Safepay is currently supported; others are disabled/coming soon
+    const isSafepay = meta.id === "safepay";
+    const status = isSafepay
+      ? (config && config.enabled && config.credentials ? "connected" : "configure")
+      : "disabled";
+
+    return {
+      ...meta,
+      status,
+      hasCredentials: isSafepay ? !!config?.credentials : false,
+      // Pass the existing config data only for Safepay
+      existingConfig: isSafepay && config ? {
+        enabled: config.enabled,
+        credentials: (config.credentials as Record<string, string>) || {}
+      } : null
+    };
+  });
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
           <CreditCard className="mr-2 h-5 w-5" />
-          Payment Settings
+          Payment Providers
         </CardTitle>
         <CardDescription>
-          Configure your payment preferences and providers
+          Configure and manage your payment service providers
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-3">
-          {providers.map((provider) => (
-            <div 
-              key={provider.id} 
-              className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-              onClick={() => handleProviderAction(provider)}
-            >
-              <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 ${provider.color} rounded flex items-center justify-center`}>
-                  <span className={`font-bold text-sm ${
-                    provider.id === 'payfast' ? 'text-blue-600' :
-                    provider.id === 'safepay' ? 'text-green-600' :
-                    provider.id === 'easypaisa' ? 'text-purple-600' :
-                    'text-orange-600'
-                  }`}>
-                    {provider.letter}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-medium">{provider.name}</p>
-                  <p className="text-sm text-gray-500">{provider.description}</p>
-                </div>
-              </div>
-              {getStatusBadge(provider.status)}
-            </div>
-          ))}
-        </div>
+      <CardContent>
+        <PaymentSettingsCardClient initialProviders={providers} />
       </CardContent>
     </Card>
   );
-} 
+}

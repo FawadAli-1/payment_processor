@@ -40,6 +40,7 @@ model Business {
   payments     Payment[]
   paymentLinks PaymentLink[]
   customers    Customer[]
+  providerConfigs ProviderConfig[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -63,6 +64,8 @@ model Payment {
   metadata      Json?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  attempts      PaymentAttempt[]
 }
 
 model PaymentLink {
@@ -146,4 +149,54 @@ enum WebhookStatus {
   ACTIVE
   INACTIVE
   FAILED
+}
+
+model ProviderConfig {
+  id          String          @id @default(cuid())
+  provider    PaymentProvider
+  enabled     Boolean         @default(false)
+  credentials Json?
+  business    Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId  String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([businessId, provider])
+}
+
+/// Tracks each provider attempt for a payment for audit/idempotency
+model PaymentAttempt {
+  id              String           @id @default(cuid())
+  payment         Payment          @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId       String
+  provider        PaymentProvider
+  providerRef     String?
+  idempotencyKey  String?
+  status          AttemptStatus    @default(PENDING)
+  error           String?
+  raw             Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([paymentId])
+}
+
+enum AttemptStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+/// Stores received webhook calls for idempotency and audit
+model WebhookEvent {
+  id            String           @id @default(cuid())
+  provider      PaymentProvider
+  externalId    String
+  signature     String?
+  payload       Json
+  processedAt   DateTime?
+  result        String?
+  createdAt     DateTime         @default(now())
+
+  @@unique([provider, externalId])
 }

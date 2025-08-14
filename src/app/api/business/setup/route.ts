@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       message: "Business created successfully" 
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to create business. Please try again." },
       { status: 500 }
