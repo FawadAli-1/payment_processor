@@ -1,6 +1,7 @@
 "use client";
 
 import { Sidebar, MobileMenuButton } from "@/components/shared/Sidebar";
+import { RouteTransition } from "@/components/ui/route-transition";
 import { useState } from "react";
 
 export function DashboardLayoutClient({
@@ -12,6 +13,7 @@ export function DashboardLayoutClient({
 
   return (
     <div className="flex h-screen bg-gray-50">
+      <RouteTransition />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <main className="flex-1 overflow-auto">
         {/* Mobile header */}

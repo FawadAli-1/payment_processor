@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { 
   LayoutDashboard, 
   CreditCard, 
@@ -31,9 +31,33 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+const NavigationItem = memo(({ item, isActive, onClose }: { 
+  item: typeof navigation[0]; 
+  isActive: boolean; 
+  onClose: () => void; 
+}) => (
+  <Link href={item.href} onClick={onClose} prefetch>
+    <Button
+      variant={isActive ? "default" : "ghost"}
+      className={`w-full justify-start ${
+        isActive ? "bg-blue-600 text-white" : "text-gray-600 hover:text-gray-900"
+      }`}
+    >
+      <item.icon className="mr-3 h-5 w-5" />
+      {item.name}
+    </Button>
+  </Link>
+));
+
+NavigationItem.displayName = 'NavigationItem';
+
+export const Sidebar = memo(function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useUser();
   const pathname = usePathname();
+  
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   return (
     <>
@@ -41,7 +65,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onClose}
+          onClick={handleClose}
         />
       )}
       
@@ -52,7 +76,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       `}>
         {/* Mobile close button */}
         <div className="lg:hidden flex justify-end p-4 border-b">
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={handleClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>
@@ -72,17 +96,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link key={item.name} href={item.href} onClick={() => onClose()}>
-                <Button
-                  variant={isActive ? "default" : "ghost"}
-                  className={`w-full justify-start ${
-                    isActive ? "bg-blue-600 text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Button>
-              </Link>
+              <NavigationItem 
+                key={item.name} 
+                item={item} 
+                isActive={isActive} 
+                onClose={handleClose}
+              />
             );
           })}
         </nav>
@@ -102,7 +121,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       </div>
     </>
   );
-}
+});
 
 export function MobileMenuButton({ onClick }: { onClick: () => void }) {
   return (
