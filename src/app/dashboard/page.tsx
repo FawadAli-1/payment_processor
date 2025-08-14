@@ -81,7 +81,14 @@ export default async function DashboardPage() {
   const stats = calculateStats(business.payments, business.customers);
 
   // Get recent transactions
-  const recentTransactions = business.payments.slice(0, 4);
+  const recentTransactions = business.payments.slice(0, 4).map(payment => ({
+    id: payment.id,
+    customerName: payment.customerName || undefined,
+    customerEmail: payment.customerEmail || undefined,
+    provider: payment.provider,
+    amount: payment.amount,
+    status: payment.status
+  }));
 
   // Fetch provider status dynamically
   let providers = [
@@ -213,7 +220,7 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="space-y-3 sm:space-y-4">
                 {recentTransactions.length > 0 ? (
-                  recentTransactions.map((transaction: any) => (
+                  recentTransactions.map((transaction: { id: string; customerName?: string; customerEmail?: string; provider: string; amount: number; status: string }) => (
                     <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3 min-w-0 flex-1">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">

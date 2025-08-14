@@ -100,6 +100,15 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Transform payments data to match the expected structure
+    const transformedPayments = allPayments.map(payment => ({
+      id: payment.id,
+      status: payment.status,
+      createdAt: payment.createdAt,
+      customerName: payment.customer?.name || null,
+      amount: payment.amount
+    }));
+
     // Calculate analytics data
     const analyticsData = calculateAnalyticsData(
       currentPayments,
@@ -111,7 +120,7 @@ export async function GET(request: NextRequest) {
     const paymentMethods = calculatePaymentMethodDistribution(allPayments);
     const topProducts = calculateTopProducts(allPaymentLinks);
     const customerSegments = calculateCustomerSegments(allCustomers);
-    const recentActivity = generateRecentActivity(allPayments, allCustomers, allPaymentLinks);
+    const recentActivity = generateRecentActivity(transformedPayments, allCustomers, allPaymentLinks);
 
     return NextResponse.json({
       analytics: analyticsData,

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Copy, 
   ExternalLink, 
@@ -12,21 +12,11 @@ import {
   Check
 } from "lucide-react";
 import { toast } from "sonner";
-import { formatPaymentLinkAmount, getPaymentLinkStatusBadgeVariant, calculateConversionRate } from "@/lib/payment-links";
+import { PaymentLink, formatPaymentLinkAmount, getPaymentLinkStatusBadgeVariant, calculateConversionRate } from "@/lib/payment-links";
 
 interface PaymentLinkActionsProps {
-  link: {
-    id: string;
-    title: string;
-    amount: number;
-    currency: string;
-    status: string;
-    clicks: number;
-    payments: Array<{ id: string; amount: number; status: string; createdAt: string | Date }>;
-    url: string;
-    expiresAt?: string | Date | null;
-  };
-  onEdit: (link: any) => void;
+  link: PaymentLink;
+  onEdit: (link: PaymentLink) => void;
   onDelete: (id: string) => void;
 }
 
@@ -81,7 +71,7 @@ export function PaymentLinkActions({ link, onEdit, onDelete }: PaymentLinkAction
     }
   };
 
-  const completedPayments = link.payments.filter((p: Record<string, unknown>) => p.status === 'COMPLETED');
+  const completedPayments = link.payments.filter((p: PaymentLink['payments'][number]) => p.status === 'COMPLETED');
   const totalRevenue = completedPayments.reduce((sum, p) => sum + p.amount, 0);
   const conversionRate = calculateConversionRate(link.clicks, completedPayments.length);
 

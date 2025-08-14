@@ -3,10 +3,11 @@ import { db } from "@/lib/db";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const payment = await db.payment.findUnique({ where: { id: params.id } });
+    const { id } = await params;
+    const payment = await db.payment.findUnique({ where: { id } });
     if (!payment) {
       return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }

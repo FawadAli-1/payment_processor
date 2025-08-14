@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const business = await getCurrentBusiness();
     
     if (!business) {
@@ -15,7 +16,7 @@ export async function GET(
 
     const paymentLink = await db.paymentLink.findFirst({
       where: {
-        id: params.id,
+        id,
         businessId: business.id,
       },
       include: {
@@ -46,9 +47,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const business = await getCurrentBusiness();
     
     if (!business) {
@@ -60,7 +62,7 @@ export async function PUT(
 
     const paymentLink = await db.paymentLink.findFirst({
       where: {
-        id: params.id,
+        id,
         businessId: business.id,
       },
     });
@@ -70,7 +72,7 @@ export async function PUT(
     }
 
     const updatedPaymentLink = await db.paymentLink.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         description,
@@ -103,9 +105,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const business = await getCurrentBusiness();
     
     if (!business) {
@@ -114,7 +117,7 @@ export async function DELETE(
 
     const paymentLink = await db.paymentLink.findFirst({
       where: {
-        id: params.id,
+        id,
         businessId: business.id,
       },
     });
@@ -124,7 +127,7 @@ export async function DELETE(
     }
 
     await db.paymentLink.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Payment link deleted successfully" });

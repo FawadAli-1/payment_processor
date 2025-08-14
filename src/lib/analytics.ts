@@ -40,10 +40,10 @@ export interface RecentActivityData {
 }
 
 export function calculateAnalyticsData(
-  currentPayments: Record<string, unknown>[],
-  previousPayments: Record<string, unknown>[],
-  currentCustomers: Record<string, unknown>[],
-  previousCustomers: Record<string, unknown>[]
+  currentPayments: Array<{ status: string; amount: number }>,
+  previousPayments: Array<{ status: string; amount: number }>,
+  currentCustomers: Array<{ status: string }>,
+  previousCustomers: Array<{ status: string }>
 ): AnalyticsData {
   // Current period calculations
   const currentRevenue = currentPayments
@@ -83,7 +83,7 @@ export function calculateAnalyticsData(
   };
 }
 
-export function calculatePaymentMethodDistribution(payments: Record<string, unknown>[]): PaymentMethodData[] {
+export function calculatePaymentMethodDistribution(payments: Array<{ status: string; provider: string }>): PaymentMethodData[] {
   const completedPayments = payments.filter(p => p.status === 'COMPLETED');
   const totalPayments = completedPayments.length;
 
@@ -116,10 +116,10 @@ export function calculatePaymentMethodDistribution(payments: Record<string, unkn
   }));
 }
 
-export function calculateTopProducts(paymentLinks: Record<string, unknown>[]): TopProductData[] {
+export function calculateTopProducts(paymentLinks: Array<{ title: string; payments?: Array<{ status: string; amount: number }> }>): TopProductData[] {
   const products = paymentLinks.reduce((acc, link) => {
-    const completedPayments = link.payments?.filter((p: Record<string, unknown>) => p.status === 'COMPLETED') || [];
-    const revenue = completedPayments.reduce((sum: number, p: Record<string, unknown>) => sum + p.amount, 0);
+    const completedPayments = link.payments?.filter((p) => p.status === 'COMPLETED') || [];
+    const revenue = completedPayments.reduce((sum, p) => sum + p.amount, 0);
     const sales = completedPayments.length;
 
     if (revenue > 0) {
@@ -137,61 +137,45 @@ export function calculateTopProducts(paymentLinks: Record<string, unknown>[]): T
     .slice(0, 4);
 }
 
-export function calculateCustomerSegments(customers: Record<string, unknown>[]): CustomerSegmentData[] {
+export function calculateCustomerSegments(customers: Array<{ status: string; totalSpent: number }>): CustomerSegmentData[] {
   const activeCustomers = customers.filter(c => c.status === 'ACTIVE');
   
   if (activeCustomers.length === 0) {
     return [
       { segment: "High Value", count: 0, revenue: 0, color: "bg-green-500" },
-      { segment: "Medium Value", count: 0, revenue: 0, color: "bg-blue-500" },
+      { segment: "Medium Value", count: 0, revenue: 0, color: "bg-yellow-500" },
       { segment: "Low Value", count: 0, revenue: 0, color: "bg-orange-500" }
     ];
   }
 
-  // Calculate total spent for each customer
-  const customersWithSpending = activeCustomers.map(customer => ({
-    ...customer,
-    totalSpent: customer.totalSpent || 0
-  }));
+  const totalRevenue = activeCustomers.reduce((sum, c) => sum + c.totalSpent, 0);
+  const averageRevenue = totalRevenue / activeCustomers.length;
 
-  // Sort by total spent to find thresholds
-  const sortedCustomers = customersWithSpending.sort((a, b) => b.totalSpent - a.totalSpent);
-  const totalCustomers = sortedCustomers.length;
-  
-  // Define segments (top 20%, next 30%, remaining 50%)
-  const highValueCount = Math.ceil(totalCustomers * 0.2);
-  const mediumValueCount = Math.ceil(totalCustomers * 0.3);
-
-  const highValue = sortedCustomers.slice(0, highValueCount);
-  const mediumValue = sortedCustomers.slice(highValueCount, highValueCount + mediumValueCount);
-  const lowValue = sortedCustomers.slice(highValueCount + mediumValueCount);
+  const segments = activeCustomers.reduce((acc, customer) => {
+    if (customer.totalSpent >= averageRevenue * 1.5) {
+      acc.highValue += customer.totalSpent;
+      acc.highCount++;
+    } else if (customer.totalSpent >= averageRevenue * 0.5) {
+      acc.mediumValue += customer.totalSpent;
+      acc.mediumCount++;
+    } else {
+      acc.lowValue += customer.totalSpent;
+      acc.lowCount++;
+    }
+    return acc;
+  }, { highValue: 0, highCount: 0, mediumValue: 0, mediumCount: 0, lowValue: 0, lowCount: 0 });
 
   return [
-    {
-      segment: "High Value",
-      count: highValue.length,
-      revenue: highValue.reduce((sum, c) => sum + c.totalSpent, 0),
-      color: "bg-green-500"
-    },
-    {
-      segment: "Medium Value",
-      count: mediumValue.length,
-      revenue: mediumValue.reduce((sum, c) => sum + c.totalSpent, 0),
-      color: "bg-blue-500"
-    },
-    {
-      segment: "Low Value",
-      count: lowValue.length,
-      revenue: lowValue.reduce((sum, c) => sum + c.totalSpent, 0),
-      color: "bg-orange-500"
-    }
+    { segment: "High Value", count: segments.highCount, revenue: segments.highValue, color: "bg-green-500" },
+    { segment: "Medium Value", count: segments.mediumCount, revenue: segments.mediumValue, color: "bg-yellow-500" },
+    { segment: "Low Value", count: segments.lowCount, revenue: segments.lowValue, color: "bg-orange-500" }
   ];
 }
 
 export function generateRecentActivity(
-  payments: any[],
-  customers: any[],
-  paymentLinks: any[]
+  payments: Array<{ id: string; status: string; createdAt: string | Date; customerName?: string | null; amount: number }>,
+  customers: Array<{ id: string; name: string; createdAt: string | Date }>,
+  paymentLinks: Array<{ id: string; title: string; createdAt: string | Date }>
 ): RecentActivityData[] {
   const activities: RecentActivityData[] = [];
 

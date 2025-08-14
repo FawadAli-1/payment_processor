@@ -12,10 +12,10 @@ export default async function SafepayCheckoutPage({ params }: { params: Promise<
   if (!link) notFound();
 
   const businessConfig = await db.providerConfig.findFirst({ where: { businessId: payment.businessId, provider: "SAFEPAY", enabled: true } });
-  let creds = (businessConfig?.credentials || {}) as Record<string, any>;
+  let creds = (businessConfig?.credentials || {}) as Record<string, unknown>;
   if (isEncryptedCredentials(creds)) {
     const d = decryptJson(creds);
-    if (d && typeof d === "object") creds = d as Record<string, any>;
+    if (d && typeof d === "object") creds = d as Record<string, unknown>;
   }
 
   const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/pay/${encodeURIComponent(link.url.split("/pay/").pop() || "")}/success?pid=${encodeURIComponent(payment.id)}`;
@@ -34,7 +34,7 @@ export default async function SafepayCheckoutPage({ params }: { params: Promise<
       reference={payment.id}
       returnUrl={returnUrl}
       notifyUrl={notifyUrl}
-      apiKey={creds.apiKey || ""}
+      apiKey={creds.apiKey as string || ""}
       env="sandbox"
     />
   );

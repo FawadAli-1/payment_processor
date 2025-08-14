@@ -23,14 +23,15 @@ export async function POST(request: NextRequest) {
     const ref = payload.reference || payload.ref || payload.m_payment_id || payload.paymentId;
     if (!ref) return NextResponse.json({ error: "missing reference" }, { status: 400 });
 
-    const payment = await db.payment.findUnique({ where: { id: ref } });
+    const payment = await db.payment.findUnique({ where: { id: ref as string } });
     if (!payment) return NextResponse.json({ error: "payment not found" }, { status: 404 });
 
     // Persist raw webhook for idempotency/audit
     const externalId = String(payload.transaction_id || payload.provider_ref || payload.id || `ref:${ref}`);
     await db.webhookEvent.upsert({
       where: { provider_externalId: { provider: "SAFEPAY", externalId } },
-      create: { provider: "SAFEPAY", externalId, payload },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      create: { provider: "SAFEPAY", externalId, payload: payload as any }, // Type assertion for Prisma compatibility
       update: {},
     });
 

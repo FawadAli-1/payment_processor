@@ -9,17 +9,11 @@ import {
   Trash2
 } from "lucide-react";
 import { toast } from "sonner";
+import { Customer } from "@/lib/customers";
 
 interface CustomerActionsProps {
-  customer: {
-    id: string;
-    name: string;
-    email: string;
-    phone?: string | null;
-    address?: string | null;
-    status: string;
-  };
-  onEdit: (customer: Record<string, unknown>) => void;
+  customer: Customer;
+  onEdit: (customer: Customer) => void;
   onDelete: (id: string) => void;
 }
 

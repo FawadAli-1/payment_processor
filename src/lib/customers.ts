@@ -11,7 +11,7 @@ export interface Customer {
   totalOrders: number;
   lastOrderAt?: string | Date | null;
   status: string;
-  metadata?: Record<string, unknown>;
+  metadata?: string | number | boolean | null | Record<string, unknown> | unknown[]; // Matches Prisma JsonValue
   createdAt: string | Date;
   updatedAt: string | Date;
 }
@@ -114,12 +114,12 @@ export function formatCustomerDate(dateInput: string | Date): {
   };
 }
 
-export function formatPhoneNumber(phone: string | null): string {
+export function formatPhoneNumber(phone: string | null | undefined): string {
   if (!phone) return "N/A";
   return phone;
 }
 
-export function formatAddress(address: string | null): string {
+export function formatAddress(address: string | null | undefined): string {
   if (!address) return "N/A";
   return address;
 } 

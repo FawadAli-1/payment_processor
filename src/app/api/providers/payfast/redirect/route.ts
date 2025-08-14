@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
   const notifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/webhooks/payfast`;
 
   const fields: Record<string, string> = {
-    merchant_id: merchantId,
-    merchant_key: merchantKey,
+    merchant_id: merchantId as string,
+    merchant_key: merchantKey as string,
     return_url: returnUrl,
     cancel_url: cancelUrl,
     notify_url: notifyUrl,

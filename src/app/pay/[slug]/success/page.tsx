@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 
-export default async function SuccessPage({ searchParams }: { searchParams: { pid?: string } }) {
-  const pid = searchParams?.pid;
+export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ pid?: string }> }) {
+  const { pid } = await searchParams;
   const payment = pid ? await db.payment.findUnique({ where: { id: pid } }) : null;
   return (
     <div className="max-w-xl mx-auto py-16 text-center">

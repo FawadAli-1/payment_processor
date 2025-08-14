@@ -25,6 +25,7 @@ export default async function PaymentLinksPage() {
       expiresAt: true,
       createdAt: true,
       updatedAt: true,
+      businessId: true,
       payments: {
         select: { id: true, amount: true, status: true, createdAt: true },
         orderBy: { createdAt: "desc" },

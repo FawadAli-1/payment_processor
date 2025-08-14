@@ -18,24 +18,8 @@ import {
 import { CreateCustomerDialog } from "@/components/shared/CreateCustomerDialog";
 import { CustomerActions } from "@/components/shared/CustomerActions";
 import { EditCustomerDialog } from "@/components/shared/EditCustomerDialog";
-import { calculateCustomerStats, filterCustomers, formatCustomerAmount, getCustomerStatusBadgeVariant, formatPhoneNumber, formatAddress } from "@/lib/customers";
+import { calculateCustomerStats, filterCustomers, formatCustomerAmount, getCustomerStatusBadgeVariant, formatPhoneNumber, formatAddress, Customer } from "@/lib/customers";
 import { toast } from "sonner";
-
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string | null;
-  address?: string | null;
-  businessId: string;
-  totalSpent: number;
-  totalOrders: number;
-  lastOrderAt?: string | Date | null;
-  status: string;
-  metadata?: Record<string, unknown>;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-}
 
 interface CustomersClientProps {
   initialCustomers: Customer[];

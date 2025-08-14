@@ -63,7 +63,7 @@ export default function SafepayCheckoutClient(props: Props) {
             production: props.apiKey,
           },
           payment: (data: Record<string, unknown>, actions: Record<string, unknown>) => {
-            return actions.payment.create({
+            return (actions.payment as any).create({
               transaction: {
                 amount: props.amount,
                 currency: props.currency,
@@ -79,17 +79,17 @@ export default function SafepayCheckoutClient(props: Props) {
           onError: () => {
             setError("Safepay reported an error. Please try again.");
           },
-        } as any;
+        } as Record<string, unknown>;
 
         try {
           // Try known render signature (config, selector)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          window.safepay.Button.render(cfg, "#safepay-container");
+          (window.safepay.Button as any).render(cfg, "#safepay-container");
         } catch {
           try {
             // Fallback: some SDKs use instance().render(selector)
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            window.safepay.Button().render("#safepay-container");
+            (window.safepay.Button as any)().render("#safepay-container");
           } catch (e) {
             setError("Unable to render Safepay checkout. Check API key and sandbox availability.");
             return;
