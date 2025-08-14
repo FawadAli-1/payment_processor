@@ -254,7 +254,7 @@ Example: https://payflow.com/pay/premium-course-123`}
               <ul className="space-y-2 text-sm text-gray-700">
                 <li><code className="bg-gray-100 px-1 rounded">payflow.com</code> - PayFlow domain</li>
                 <li><code className="bg-gray-100 px-1 rounded">/pay/</code> - Checkout path</li>
-                <li><code className="bg-gray-100 px-1 rounded">{slug}</code> - Unique identifier for your payment link</li>
+                <li><code className="bg-gray-100 px-1 rounded">{"{slug}"}</code> - Unique identifier for your payment link</li>
               </ul>
             </div>
           </div>

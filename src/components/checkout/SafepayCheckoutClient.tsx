@@ -4,8 +4,37 @@ import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    safepay?: Record<string, unknown>;
+    safepay?: {
+      Button: {
+        render: (config: SafepayConfig, selector: string) => void;
+      } | (() => { render: (selector: string) => void });
+    };
   }
+}
+
+interface SafepayConfig {
+  env: "sandbox" | "production";
+  client: {
+    sandbox: string;
+    production: string;
+  };
+  payment: (data: Record<string, unknown>, actions: SafepayActions) => unknown;
+  onAuthorize: () => void;
+  onCancel: () => void;
+  onError: () => void;
+}
+
+interface SafepayActions {
+  payment: {
+    create: (transaction: {
+      amount: number;
+      currency: string;
+      description?: string;
+      reference: string;
+      return_url: string;
+      notify_url: string;
+    }) => unknown;
+  };
 }
 
 interface Props {
@@ -56,22 +85,20 @@ export default function SafepayCheckoutClient(props: Props) {
           return;
         }
 
-        const cfg = {
+        const cfg: SafepayConfig = {
           env: props.env,
           client: {
             sandbox: props.apiKey,
             production: props.apiKey,
           },
-          payment: (data: Record<string, unknown>, actions: Record<string, unknown>) => {
-            return (actions.payment as any).create({
-              transaction: {
-                amount: props.amount,
-                currency: props.currency,
-                description: props.description,
-                reference: props.reference,
-                return_url: props.returnUrl,
-                notify_url: props.notifyUrl,
-              },
+          payment: (data: Record<string, unknown>, actions: SafepayActions) => {
+            return actions.payment.create({
+              amount: props.amount,
+              currency: props.currency,
+              description: props.description,
+              reference: props.reference,
+              return_url: props.returnUrl,
+              notify_url: props.notifyUrl,
             });
           },
           onAuthorize: () => {},
@@ -79,21 +106,21 @@ export default function SafepayCheckoutClient(props: Props) {
           onError: () => {
             setError("Safepay reported an error. Please try again.");
           },
-        } as Record<string, unknown>;
+        };
 
         try {
           // Try known render signature (config, selector)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          (window.safepay.Button as any).render(cfg, "#safepay-container");
-        } catch {
-          try {
-            // Fallback: some SDKs use instance().render(selector)
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            (window.safepay.Button as any)().render("#safepay-container");
-          } catch (e) {
-            setError("Unable to render Safepay checkout. Check API key and sandbox availability.");
-            return;
+          if (typeof window.safepay.Button === 'function') {
+            // Button is a function that returns an object with render method
+            const buttonInstance = (window.safepay.Button as () => { render: (selector: string) => void })();
+            buttonInstance.render("#safepay-container");
+          } else {
+            // Button is an object with render method
+            (window.safepay.Button as { render: (config: SafepayConfig, selector: string) => void }).render(cfg, "#safepay-container");
           }
+        } catch (e) {
+          setError("Unable to render Safepay checkout. Check API key and sandbox availability.");
+          return;
         }
 
         clearTimeout(timeout);

@@ -44,7 +44,10 @@ export function getMonthRange(monthsBack: number = 1) {
   return { startDate, endDate };
 }
 
-export function calculateStats(payments: Record<string, unknown>[], customers: Record<string, unknown>[]) {
+export function calculateStats(
+  payments: Array<{ createdAt: string | Date; status: string; amount: number }>, 
+  customers: Array<{ createdAt: string | Date }>
+) {
   const now = new Date();
   const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
